@@ -99,7 +99,7 @@ public class MedicionController implements Serializable {
          * medicion_2_febrero
          */
         medicionRepository.setDynamicDatabase("lecturas_" + JmoordbCoreDateUtil.anioDeUnaFecha(medicion.getFechahora()).toString().trim() + "db");
-        Integer numeroMes = JmoordbCoreDateUtil.mesDeUnaFechaStartEneroWith1(medicion.getFechahora());
+        Integer numeroMes = JmoordbCoreDateUtil.mesDeUnaFechaStartEneroWith0(medicion.getFechahora());
         medicionRepository.setDynamicCollection(nameOfCollection + medicion.getIdestacion().toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes));
 
         Optional<Medicion> medicionOptional = medicionRepository.save(medicion);
@@ -232,6 +232,13 @@ public class MedicionController implements Serializable {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
 
     public List<Medicion> lookup(@QueryParam("filter") String filter, @QueryParam("sort") String sort, @QueryParam("page") Integer page, @QueryParam("size") Integer size, @QueryParam("idestacion") Long idestacion, @QueryParam("anio") Integer anio, @QueryParam("mes") Integer mes) {
+        System.out.println(filter);
+        System.out.println(sort);
+        System.out.println(page);
+        System.out.println(size);
+        System.out.println(idestacion);
+        System.out.println(anio);
+        System.out.println(mes);
         List<Medicion> suggestions = new ArrayList<>();
         try {
 
