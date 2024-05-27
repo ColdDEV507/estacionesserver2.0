@@ -99,7 +99,7 @@ public class MedicionController implements Serializable {
          * medicion_2_febrero
          */
         medicionRepository.setDynamicDatabase("lecturas_" + JmoordbCoreDateUtil.anioDeUnaFecha(medicion.getFechahora()).toString().trim() + "db");
-        Integer numeroMes = JmoordbCoreDateUtil.mesDeUnaFechaStartEneroWith1(medicion.getFechahora());
+        Integer numeroMes = JmoordbCoreDateUtil.mesDeUnaFechaStartEneroWith0(medicion.getFechahora());
         medicionRepository.setDynamicCollection(nameOfCollection + medicion.getIdestacion().toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes));
 
         Optional<Medicion> medicionOptional = medicionRepository.save(medicion);
