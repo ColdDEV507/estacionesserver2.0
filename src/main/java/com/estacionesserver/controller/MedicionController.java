@@ -237,6 +237,8 @@ public class MedicionController implements Serializable {
 
      medicionRepository.setDynamicDatabase("lecturas_" + anio.toString().trim() + "db");
         Integer numeroMes = mes;
+        System.out.println(numeroMes);
+        System.out.println(JmoordbCoreDateUtil.getNombreMes(numeroMes));
         medicionRepository.setDynamicCollection(nameOfCollection +idestacion.toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes));
 
             Search search = DocumentUtil.convertForLookup(filter, sort, page, size);
