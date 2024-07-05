@@ -24,20 +24,47 @@ public class Medicion {
     @Column
     private Date fechahora;
     @Column
-    private Double temperatura;    
-    
+    private Double co;
     @Column
-    private Double humedad;    
+    private Double o3;
+    @Column
+    private Double so2;
+    @Column
+    private Double no2;
+    @Column
+    private Double pm25;
+    @Column
+    private Double pm10;
+    @Column
+    private Double temperatura;    
+    @Column
+    private Double humedad;
+    @Column
+    private Double lluvia;
+    @Column
+    private Double dir_Viento;
+    @Column
+    private Double vel_Viento;
 
     public Medicion() {
     }
 
-    public Medicion(Long idmedicion, Long idestacion, Date fechahora, Double temperatura, Double humedad) {
+    public Medicion(Long idmedicion, Long idestacion, Date fechahora, Double  co, Double  o3, Double  so2, Double  no2, 
+            Double  pm25, Double  pm10, Double temperatura, Double humedad, Double  lluvia, Double  dir_Viento, Double  vel_Viento) {
         this.idmedicion = idmedicion;
         this.idestacion = idestacion;
         this.fechahora = fechahora;
         this.temperatura = temperatura;
         this.humedad = humedad;
+        this.co = co;
+        this.o3 = o3;
+        this.so2 = so2;
+        this.no2 = no2;
+        this.pm25 = pm25;
+        this.pm10 = pm10;
+        this.lluvia = lluvia;
+        this.vel_Viento = vel_Viento;
+        this.dir_Viento = dir_Viento;
     }
 
     public Long getIdmedicion() {
@@ -79,7 +106,79 @@ public class Medicion {
     public void setHumedad(Double humedad) {
         this.humedad = humedad;
     }
+    
+    public Double getCo() {
+        return co;
+    }
 
+    public void setCo(Double co) {
+        this.co = co;
+    }
+    
+    public Double getO3() {
+        return o3;
+    }
+
+    public void setO3(Double O3) {
+        this.o3 = O3;
+    }
+    
+    public Double getSo2() {
+        return so2;
+    }
+
+    public void setSo2(Double SO2) {
+        this.so2 = SO2;
+    }
+    
+    public Double getNo2() {
+        return no2;
+    }
+
+    public void setNo2(Double NO2) {
+        this.no2 = NO2;
+    }
+    
+    public Double getPm10() {
+        return pm10;
+    }
+
+    public void setPm10(Double PM10) {
+        this.pm10 = PM10;
+    }
+    
+    public Double getPm25() {
+        return pm25;
+    }
+
+    public void setPm25(Double PM25) {
+        this.pm25 = PM25;
+    }
+    
+    public Double getLluvia(){
+        return lluvia;
+    }
+    
+    public void setLluvia(Double lluvia){
+        this.lluvia = lluvia;
+    }
+    
+    public Double getDir_Viento() {
+        return dir_Viento;
+    }
+
+    public void setDir_Viento(Double Dir_Viento) {
+        this.dir_Viento = Dir_Viento;
+    }
+    
+    public Double getVel_Viento() {
+        return vel_Viento;
+    }
+
+    public void setVel_Viento(Double Vel_Viento) {
+        this.vel_Viento = Vel_Viento;
+    }
+    
     @Override
     public int hashCode() {
         int hash = 5;
@@ -87,7 +186,15 @@ public class Medicion {
         hash = 23 * hash + Objects.hashCode(this.idestacion);
         hash = 23 * hash + Objects.hashCode(this.fechahora);
         hash = 23 * hash + Objects.hashCode(this.temperatura);
-        hash = 23 * hash + Objects.hashCode(this.humedad);
+        hash = 23 * hash + Objects.hashCode(this.co);
+        hash = 23 * hash + Objects.hashCode(this.o3);
+        hash = 23 * hash + Objects.hashCode(this.so2);
+        hash = 23 * hash + Objects.hashCode(this.no2);
+        hash = 23 * hash + Objects.hashCode(this.pm10);
+        hash = 23 * hash + Objects.hashCode(this.pm25);
+        hash = 23 * hash + Objects.hashCode(this.lluvia);
+        hash = 23 * hash + Objects.hashCode(this.dir_Viento);
+        hash = 23 * hash + Objects.hashCode(this.vel_Viento);
         return hash;
     }
 
@@ -115,12 +222,39 @@ public class Medicion {
         if (!Objects.equals(this.temperatura, other.temperatura)) {
             return false;
         }
+        if (!Objects.equals(this.co, other.co)) {
+            return false;
+        }
+        if (!Objects.equals(this.o3, other.o3)) {
+            return false;
+        }
+        if (!Objects.equals(this.so2, other.so2)) {
+            return false;
+        }
+        if (!Objects.equals(this.no2, other.no2)) {
+            return false;
+        }
+        if (!Objects.equals(this.pm10, other.pm10)) {
+            return false;
+        }
+        if (!Objects.equals(this.pm25, other.pm25)) {
+            return false;
+        }
+        if (!Objects.equals(this.lluvia, other.lluvia)) {
+            return false;
+        }
+        if (!Objects.equals(this.vel_Viento, other.vel_Viento)) {
+            return false;
+        }
+        if (!Objects.equals(this.dir_Viento, other.dir_Viento)) {
+            return false;
+        }
         return Objects.equals(this.humedad, other.humedad);
     }
 
     @Override
     public String toString() {
-        return "Medicion{" + "idmedicion=" + idmedicion + ", idestacion=" + idestacion + ", fechahora=" + fechahora + ", temperatura=" + temperatura + ", humedad=" + humedad + '}';
+        return "Medicion{" + "idmedicion=" + idmedicion + ", idestacion=" + idestacion + ", fechahora=" + fechahora + ", co=" + co + ", o3=" + o3 +", so2=" + so2 + ", no2= " + no2 + ", pm25= " + pm25 + "pm10 =" + pm10 + ", temperatura=" + temperatura + ", humedad=" + humedad + ", lluvia=" + lluvia + ", vel_Viento=" + vel_Viento + ", dir_Viento= " + dir_Viento + + '}';
     }
     
     
