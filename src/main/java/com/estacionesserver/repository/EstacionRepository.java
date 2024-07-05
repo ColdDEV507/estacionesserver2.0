@@ -33,7 +33,7 @@ public interface EstacionRepository extends CrudRepository<Estacion, Long> {
     @Lookup
     public List<Estacion> lookup(Search search);
 
-        @Find
+    @Find
     public List<Estacion> findByEstacion(String estacion);
     
     @Count()
