@@ -22,16 +22,22 @@ public class Estacion {
     @Column
     private String descripcion;
     @Column
+    private String latitud;
+    @Column
+    private String longitud;
+    @Column
     private Boolean activo;
 
     public Estacion() {
     }
 
-    public Estacion(Long idestacion, String estacion, String descripcion, Boolean activo) {
+    public Estacion(Long idestacion, String estacion, String descripcion, Boolean activo, String latitud, String longitud) {
         this.idestacion = idestacion;
         this.estacion = estacion;
         this.descripcion = descripcion;
         this.activo = activo;
+        this.latitud = latitud;
+        this.longitud = longitud;
     }
 
     public Long getIdestacion() {
@@ -65,6 +71,22 @@ public class Estacion {
     public void setActivo(Boolean activo) {
         this.activo = activo;
     }
+    
+    public String getLatitud(){
+        return latitud;
+    }
+    
+    public void setLatitud(String latitud){
+        this.latitud = latitud;
+    }
+    
+    public String getLongitud(){
+        return longitud;
+    }
+    
+    public void setLongitud(String longitud){
+        this.longitud = longitud;
+    }
 
     @Override
     public int hashCode() {
@@ -73,6 +95,8 @@ public class Estacion {
         hash = 83 * hash + Objects.hashCode(this.estacion);
         hash = 83 * hash + Objects.hashCode(this.descripcion);
         hash = 83 * hash + Objects.hashCode(this.activo);
+        hash = 83 * hash + Objects.hashCode(this.latitud);
+        hash = 83 * hash + Objects.hashCode(this.longitud);
         return hash;
     }
 
@@ -97,12 +121,18 @@ public class Estacion {
         if (!Objects.equals(this.idestacion, other.idestacion)) {
             return false;
         }
+        if (!Objects.equals(this.idestacion, other.longitud)) {
+            return false;
+        }
+        if (!Objects.equals(this.idestacion, other.latitud)) {
+            return false;
+        }
         return Objects.equals(this.activo, other.activo);
     }
 
     @Override
     public String toString() {
-        return "Estacion{" + "idestacion=" + idestacion + ", estacion=" + estacion + ", descripcion=" + descripcion + ", activo=" + activo + '}';
+        return "Estacion{" + "idestacion=" + idestacion + ", estacion=" + estacion + ", descripcion=" + descripcion + ", latitud=" + latitud + ", longitud=" + longitud + ", activo=" + activo + '}';
     }
 
    
