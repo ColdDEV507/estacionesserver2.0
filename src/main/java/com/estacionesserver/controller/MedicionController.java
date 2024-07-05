@@ -9,6 +9,8 @@ import com.jmoordb.core.util.DocumentUtil;
 import com.jmoordb.core.util.MessagesUtil;
 import com.estacionesserver.model.Medicion;
 import com.estacionesserver.repository.MedicionRepository;
+import com.estacionesserver.repository.EstacionRepository;
+import com.jmoordb.core.annotation.date.DateFormat;
 import com.jmoordb.core.util.JmoordbCoreDateUtil;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
@@ -49,6 +51,8 @@ public class MedicionController implements Serializable {
     // <editor-fold defaultstate="collapsed" desc="Inject">
     @Inject
     MedicionRepository medicionRepository;
+    @Inject
+    EstacionRepository estacionRepository;
 
 // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="Medicion findByIdmedicionIdproyecto(@QueryParam("idmedicion") Long idmedicion,       @QueryParam("anio") Long anio  ) ">
@@ -232,13 +236,9 @@ public class MedicionController implements Serializable {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
 
     public List<Medicion> lookup(@QueryParam("filter") String filter, @QueryParam("sort") String sort, @QueryParam("page") Integer page, @QueryParam("size") Integer size, @QueryParam("idestacion") Long idestacion, @QueryParam("anio") Integer anio, @QueryParam("mes") Integer mes) {
-        System.out.println(filter);
-        System.out.println(sort);
-        System.out.println(page);
-        System.out.println(size);
-        System.out.println(idestacion);
-        System.out.println(anio);
-        System.out.println(mes);
+        System.out.println("Año: " + anio);
+        System.out.println("ID Estacion: " + idestacion);
+        System.out.println("Mes: " + mes);
         List<Medicion> suggestions = new ArrayList<>();
         try {
 
@@ -254,7 +254,7 @@ public class MedicionController implements Serializable {
 
             MessagesUtil.error(MessagesUtil.nameOfClassAndMethod() + "error: " + e.getLocalizedMessage());
         }
-
+        System.out.println("Resultado: " + suggestions);
         return suggestions;
     }
 
@@ -289,8 +289,80 @@ public class MedicionController implements Serializable {
 
         return result;
     }
+    // </editor-fold>
+    // <editor-fold defaultstate="collapsed" desc="List<Medicion> findLastMedicion @QueryParam("filter") String filter, @QueryParam("sort") String sort, @QueryParam("anio") Integer anio, @QueryParam("mes") Integer mes">
+    @GET
+    @Path("findlastmedicion")
+    @RolesAllowed({"admin"})
+    @Operation(summary = "Busca la última medicion de una estación", description = "Busqueda de la última medicion en una estación")
+    @APIResponse(responseCode = "200", description = "Medicion")
+    @APIResponse(responseCode = "404", description = "Cuando no existe la condicion en el search")
+    @APIResponse(responseCode = "500", description = "Servidor inalcanzable")
+    @Tag(name = "BETA", description = "Esta api esta en desarrollo")
+    @APIResponse(description = "El search", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Medicion.class)))
 
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
 
+    public List<Medicion> findLastMedicion(@QueryParam("filter") String filter, @QueryParam("sort") String sort, @QueryParam("idestacion") Long idestacion, @QueryParam("anio") Integer anio, @QueryParam("mes") Integer mes) {
+        List<Medicion> suggestions = new ArrayList<>();
+        try {
+            Integer numeroMes = mes;
+
+            medicionRepository.setDynamicDatabase("lecturas_" + anio.toString().trim() + "db");
+            medicionRepository.setDynamicCollection(nameOfCollection + idestacion.toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes));
+            Search search = DocumentUtil.convertForLookup(filter, sort, 1, 1);
+
+            suggestions = medicionRepository.lookup(search);
+
+        } catch (Exception e) {
+
+            MessagesUtil.error(MessagesUtil.nameOfClassAndMethod() + "error: " + e.getLocalizedMessage());
+        }
+ 
+
+        return suggestions;
+    }
+    // </editor-fold>
+    // <editor-fold defaultstate="collapsed" desc="List<Medicion> findAllLastMedicion @QueryParam("filter") String filter, @QueryParam("sort") String sort, @QueryParam("anio") Integer anio, @QueryParam("mes") Integer mes">
+    @GET
+    @Path("findalllastmedicion")
+    @RolesAllowed({"admin"})
+    @Operation(summary = "Busca la última medicion de cada estación", description = "Busqueda de la última medicion en cada estación")
+    @APIResponse(responseCode = "200", description = "Medicion")
+    @APIResponse(responseCode = "404", description = "Cuando no existe la condicion en el search")
+    @APIResponse(responseCode = "500", description = "Servidor inalcanzable")
+    @Tag(name = "BETA", description = "Esta api esta en desarrollo")
+    @APIResponse(description = "El search", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Medicion.class)))
+
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+
+    public List<Medicion> findAllLastMedicion(@QueryParam("filter") String filter, @QueryParam("sort") String sort, @QueryParam("anio") Integer anio, @QueryParam("mes") Integer mes) {
+        List<Medicion> suggestions = new ArrayList<>();
+        List<Medicion> resultSearch = new ArrayList<>();
+        try {
+            Integer numeroMes = mes;
+            Long countEstaciones = estacionRepository.count();
+                    
+            for(int index = 1; index <= countEstaciones; index++){
+                
+            
+            medicionRepository.setDynamicDatabase("lecturas_" + anio.toString().trim() + "db");
+            medicionRepository.setDynamicCollection(nameOfCollection +String.valueOf(index) + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes));
+            Search search = DocumentUtil.convertForLookup(filter, sort, 1, 1);
+
+            resultSearch = medicionRepository.lookup(search);
+            suggestions.addAll(resultSearch);
+            }
+
+        } catch (Exception e) {
+
+            MessagesUtil.error(MessagesUtil.nameOfClassAndMethod() + "error: " + e.getLocalizedMessage());
+        }
+ 
+
+        return suggestions;
+    }
+    // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc=" List<Medicion> betweenDate(@QueryParam("fechainicial") Date fechainicial, @QueryParam("fechafinal") Date fechafinal, @QueryParam("anio") Long anio)">
     @GET
@@ -305,7 +377,12 @@ public class MedicionController implements Serializable {
 
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
 
-    public List<Medicion> betweenDate(@QueryParam("fechainicial") Date fechainicial, @QueryParam("fechafinal") Date fechafinal, @QueryParam("idestacion") Long idestacion, @QueryParam("anio") Integer anio, @QueryParam("mes") Integer mes) {
+    public List<Medicion> betweenDate(@QueryParam("fechainicial") @DateFormat final Date fechainicial, @QueryParam("fechafinal") @DateFormat final Date fechafinal, @QueryParam("idestacion") Long idestacion, @QueryParam("anio") Integer anio, @QueryParam("mes") Integer mes) {
+        System.out.println("Fecha inicio:" + fechainicial);
+        System.out.println("Fecha final: " + fechafinal);
+        System.out.println("Año: " + anio);
+        System.out.println("ID Estacion: " + idestacion);
+        System.out.println("Mes: " + mes);
         List<Medicion> suggestions = new ArrayList<>();
         try {
            medicionRepository.setDynamicDatabase("lecturas_" + anio.toString().trim() + "db");
@@ -318,9 +395,11 @@ public class MedicionController implements Serializable {
 
             MessagesUtil.error(MessagesUtil.nameOfClassAndMethod() + "error: " + e.getLocalizedMessage());
         }
+        System.out.println("Resultado: " + suggestions);
 
         return suggestions;
     }
 
     // </editor-fold>
+   
 }
