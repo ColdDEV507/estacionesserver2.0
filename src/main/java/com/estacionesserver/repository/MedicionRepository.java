@@ -67,5 +67,10 @@ public interface MedicionRepository extends CrudRepository<Medicion, Long> {
     public List<Medicion> searchLikeByDescripcion(String descripcion, Search search);
 
     @Find
-    public List<Medicion> findByFechainicialGreaterThanEqualAndFechafinalLessThanEqual(@ExcludeTime Date start, @ExcludeTime Date end);
+    public List<Medicion> findByFechahoraGreaterThanEqualAndFechahoraLessThanEqual(@ExcludeTime Date start, @ExcludeTime Date end);
+
+    
+    
+    @Find
+public List<Medicion> findByFecha(@ExcludeTime Date fecha);
 }

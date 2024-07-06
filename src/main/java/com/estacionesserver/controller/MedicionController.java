@@ -377,19 +377,22 @@ public class MedicionController implements Serializable {
 
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
 
-    public List<Medicion> betweenDate(@QueryParam("fechainicial") @DateFormat final Date fechainicial, @QueryParam("fechafinal") @DateFormat final Date fechafinal, @QueryParam("idestacion") Long idestacion, @QueryParam("anio") Integer anio, @QueryParam("mes") Integer mes) {
+    public List<Medicion> betweenDate(@QueryParam("fechainicial") @DateFormat("dd-MM-yyyy") final Date fechainicial, @QueryParam("fechafinal") @DateFormat("dd-MM-yyyy") final Date fechafinal, @QueryParam("idestacion") Long idestacion, @QueryParam("anio") Integer anio, @QueryParam("mes") Integer mes) {
+        System.out.println("---------------------llego a "+MessagesUtil.nameOfClassAndMethod());
         System.out.println("Fecha inicio:" + fechainicial);
         System.out.println("Fecha final: " + fechafinal);
         System.out.println("Año: " + anio);
         System.out.println("ID Estacion: " + idestacion);
         System.out.println("Mes: " + mes);
+        System.out.println("nombremes: " + JmoordbCoreDateUtil.getNombreMes(mes));
         List<Medicion> suggestions = new ArrayList<>();
         try {
            medicionRepository.setDynamicDatabase("lecturas_" + anio.toString().trim() + "db");
         Integer numeroMes = mes;
         medicionRepository.setDynamicCollection(nameOfCollection +idestacion.toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes));
 
-            suggestions = medicionRepository.findByFechainicialGreaterThanEqualAndFechafinalLessThanEqual(fechainicial, fechafinal);
+            suggestions = medicionRepository.findByFechahoraGreaterThanEqualAndFechahoraLessThanEqual(fechainicial, fechafinal);
+
 
         } catch (Exception e) {
 
