@@ -89,57 +89,21 @@ public class MedicionController implements Serializable {
     public Response save(
             @RequestBody(description = "Crea un nuevo medicion.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Medicion.class))) Medicion medicion) {
 
-        /**
-         * Genera base de datos para cada año formato: lectura_añodb
-         * lecturas_2024db
-         *
-         * Para las colecciones seria el primer digito indica la estacion, el
-         * segundo digito sera el mes medicion_1_enero medicion_2_enero
-         * medicion_1_febrero medicion_2_febrero ----------------------
-         * lecturas_2025db medicion_1_enero medicion_2_enero medicion_1_febrero
-         * medicion_2_febrero
-         */
-        System.out.println("---------------------llego a " + MessagesUtil.nameOfClassAndMethod());
-        System.out.println("medicion.toString()" + medicion.toString());
-        System.out.println("\n");
-        System.out.println("JmoordbCoreDateUtil.iSODate: " + JmoordbCoreDateUtil.iSODate(medicion.getFechahora()));
-        /**
-         * Convierte el isodate a date
-         *
-         */
-      
-
         Boolean conIsoDate = Boolean.TRUE;
         if (conIsoDate) {
-            System.out.println("******************************** con ISODATE");
-//            try {
-                /**
-                 * metodo convierte DateToIsoDateToDate
-                 */
-//                String df = JmoordbCoreDateUtil.iSODate(medicion.getFechahora());
-//                df = df.replace("Z", "");            
-//                SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-//                Date dateconverter = isoFormat.parse(df);
-                
-                Date dateconverter = JmoordbCoreDateUtil.dateToiSODateToDate(medicion.getFechahora());
-               
-                medicionRepository.setDynamicDatabase("lecturas_" + JmoordbCoreDateUtil.anioDeUnaFecha(dateconverter).toString().trim() + "db");
-                Integer numeroMes = JmoordbCoreDateUtil.mesDeUnaFechaStartEneroWith0(dateconverter);
-                medicionRepository.setDynamicCollection(nameOfCollection + medicion.getIdestacion().toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes).toLowerCase());
-                System.out.println("numeroMes " + numeroMes);
-                System.out.println("nombremes: " + JmoordbCoreDateUtil.getNombreMes(numeroMes).toLowerCase());
-                
-//            } catch (ParseException ex) {
-//                Logger.getLogger(MedicionController.class.getName()).log(Level.SEVERE, null, ex);
-//            }
+
+            Date dateconverter = JmoordbCoreDateUtil.dateToiSODateToDate(medicion.getFechahora());
+
+            medicionRepository.setDynamicDatabase("lecturas_" + JmoordbCoreDateUtil.anioDeUnaFecha(dateconverter).toString().trim() + "db");
+            Integer numeroMes = JmoordbCoreDateUtil.mesDeUnaFechaStartEneroWith0(dateconverter);
+            medicionRepository.setDynamicCollection(nameOfCollection + medicion.getIdestacion().toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes).toLowerCase());
 
         } else {
-            System.out.println("******************************** NO ISODATE");
+
             medicionRepository.setDynamicDatabase("lecturas_" + JmoordbCoreDateUtil.anioDeUnaFecha(medicion.getFechahora()).toString().trim() + "db");
             Integer numeroMes = JmoordbCoreDateUtil.mesDeUnaFechaStartEneroWith0(medicion.getFechahora());
             medicionRepository.setDynamicCollection(nameOfCollection + medicion.getIdestacion().toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes).toLowerCase());
-            System.out.println("numeroMes " + numeroMes);
-            System.out.println("nombremes: " + JmoordbCoreDateUtil.getNombreMes(numeroMes).toLowerCase());
+
         }
 
         Optional<Medicion> medicionOptional = medicionRepository.save(medicion);
@@ -152,9 +116,8 @@ public class MedicionController implements Serializable {
 
     }
 // </editor-fold>
-   
-    // <editor-fold defaultstate="collapsed" desc="Response update">
 
+    // <editor-fold defaultstate="collapsed" desc="Response update">
     @PUT
     @RolesAllowed({"admin"})
     @Operation(summary = "Inserta un nuevo medicion", description = "Inserta un nuevo medicion")
@@ -173,9 +136,23 @@ public class MedicionController implements Serializable {
          * lecturas_2025db medicion_1_enero medicion_2_enero medicion_1_febrero
          * medicion_2_febrero
          */
-        medicionRepository.setDynamicDatabase("lecturas_" + JmoordbCoreDateUtil.anioDeUnaFecha(medicion.getFechahora()).toString().trim() + "db");
-        Integer numeroMes = JmoordbCoreDateUtil.mesDeUnaFechaStartEneroWith1(medicion.getFechahora());
-        medicionRepository.setDynamicCollection(nameOfCollection + medicion.getIdestacion().toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes).toLowerCase());
+        Boolean conIsoDate = Boolean.TRUE;
+
+        if (conIsoDate) {
+
+            Date dateconverter = JmoordbCoreDateUtil.dateToiSODateToDate(medicion.getFechahora());
+
+            medicionRepository.setDynamicDatabase("lecturas_" + JmoordbCoreDateUtil.anioDeUnaFecha(dateconverter).toString().trim() + "db");
+            Integer numeroMes = JmoordbCoreDateUtil.mesDeUnaFechaStartEneroWith0(dateconverter);
+            medicionRepository.setDynamicCollection(nameOfCollection + medicion.getIdestacion().toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes).toLowerCase());
+
+        } else {
+
+            medicionRepository.setDynamicDatabase("lecturas_" + JmoordbCoreDateUtil.anioDeUnaFecha(medicion.getFechahora()).toString().trim() + "db");
+            Integer numeroMes = JmoordbCoreDateUtil.mesDeUnaFechaStartEneroWith0(medicion.getFechahora());
+            medicionRepository.setDynamicCollection(nameOfCollection + medicion.getIdestacion().toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes).toLowerCase());
+
+        }
 
         if (medicionRepository.update(medicion)) {
 
