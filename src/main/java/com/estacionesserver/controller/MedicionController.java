@@ -26,10 +26,15 @@ import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -85,30 +90,57 @@ public class MedicionController implements Serializable {
             @RequestBody(description = "Crea un nuevo medicion.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Medicion.class))) Medicion medicion) {
 
         /**
-         * Genera base de datos para cada año
-         * formato: lectura_añodb
-         *    lecturas_2024db
-         * 
-         * Para las colecciones seria
-         * el primer digito indica la estacion, el segundo digito sera el mes
-         * medicion_1_enero
-         * medicion_2_enero
-         * medicion_1_febrero
-         * medicion_2_febrero
-         * ----------------------
-         *   lecturas_2025db
-         * medicion_1_enero
-         * medicion_2_enero
-         * medicion_1_febrero
+         * Genera base de datos para cada año formato: lectura_añodb
+         * lecturas_2024db
+         *
+         * Para las colecciones seria el primer digito indica la estacion, el
+         * segundo digito sera el mes medicion_1_enero medicion_2_enero
+         * medicion_1_febrero medicion_2_febrero ----------------------
+         * lecturas_2025db medicion_1_enero medicion_2_enero medicion_1_febrero
          * medicion_2_febrero
          */
-        medicionRepository.setDynamicDatabase("lecturas_" + JmoordbCoreDateUtil.anioDeUnaFecha(medicion.getFechahora()).toString().trim() + "db");
-        Integer numeroMes = JmoordbCoreDateUtil.mesDeUnaFechaStartEneroWith0(medicion.getFechahora());
-        medicionRepository.setDynamicCollection(nameOfCollection + medicion.getIdestacion().toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes));
+        System.out.println("---------------------llego a " + MessagesUtil.nameOfClassAndMethod());
+        System.out.println("medicion.toString()" + medicion.toString());
+        System.out.println("\n");
+        System.out.println("JmoordbCoreDateUtil.iSODate: " + JmoordbCoreDateUtil.iSODate(medicion.getFechahora()));
+        /**
+         * Convierte el isodate a date
+         *
+         */
+      
+
+        Boolean conIsoDate = Boolean.TRUE;
+        if (conIsoDate) {
+            System.out.println("******************************** con ISODATE");
+            try {
+                /**
+                 * metodo convierte DateToIsoDateToDate
+                 */
+                String df = JmoordbCoreDateUtil.iSODate(medicion.getFechahora());
+                df = df.replace("Z", "");            
+                SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                Date dateconverter = isoFormat.parse(df);
+               
+                medicionRepository.setDynamicDatabase("lecturas_" + JmoordbCoreDateUtil.anioDeUnaFecha(dateconverter).toString().trim() + "db");
+                Integer numeroMes = JmoordbCoreDateUtil.mesDeUnaFechaStartEneroWith0(dateconverter);
+                medicionRepository.setDynamicCollection(nameOfCollection + medicion.getIdestacion().toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes));
+                System.out.println("numeroMes " + numeroMes);
+                System.out.println("nombremes: " + JmoordbCoreDateUtil.getNombreMes(numeroMes));
+            } catch (ParseException ex) {
+                Logger.getLogger(MedicionController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        } else {
+            System.out.println("******************************** NO ISODATE");
+            medicionRepository.setDynamicDatabase("lecturas_" + JmoordbCoreDateUtil.anioDeUnaFecha(medicion.getFechahora()).toString().trim() + "db");
+            Integer numeroMes = JmoordbCoreDateUtil.mesDeUnaFechaStartEneroWith0(medicion.getFechahora());
+            medicionRepository.setDynamicCollection(nameOfCollection + medicion.getIdestacion().toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes));
+            System.out.println("numeroMes " + numeroMes);
+            System.out.println("nombremes: " + JmoordbCoreDateUtil.getNombreMes(numeroMes));
+        }
 
         Optional<Medicion> medicionOptional = medicionRepository.save(medicion);
         if (medicionOptional.isPresent()) {
-  
 
             return Response.status(201).entity(medicionOptional.get()).build();
         } else {
@@ -127,31 +159,22 @@ public class MedicionController implements Serializable {
     @Tag(name = "BETA", description = "Esta api esta en desarrollo")
     public Response update(
             @RequestBody(description = "Crea un nuevo medicion.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Medicion.class))) Medicion medicion) {
-         /**
-         * Genera base de datos para cada año
-         * formato: lectura_añodb
-         *    lecturas_2024db
-         * 
-         * Para las colecciones seria
-         * el primer digito indica la estacion, el segundo digito sera el mes
-         * medicion_1_enero
-         * medicion_2_enero
-         * medicion_1_febrero
-         * medicion_2_febrero
-         * ----------------------
-         *   lecturas_2025db
-         * medicion_1_enero
-         * medicion_2_enero
-         * medicion_1_febrero
+        /**
+         * Genera base de datos para cada año formato: lectura_añodb
+         * lecturas_2024db
+         *
+         * Para las colecciones seria el primer digito indica la estacion, el
+         * segundo digito sera el mes medicion_1_enero medicion_2_enero
+         * medicion_1_febrero medicion_2_febrero ----------------------
+         * lecturas_2025db medicion_1_enero medicion_2_enero medicion_1_febrero
          * medicion_2_febrero
          */
         medicionRepository.setDynamicDatabase("lecturas_" + JmoordbCoreDateUtil.anioDeUnaFecha(medicion.getFechahora()).toString().trim() + "db");
         Integer numeroMes = JmoordbCoreDateUtil.mesDeUnaFechaStartEneroWith1(medicion.getFechahora());
         medicionRepository.setDynamicCollection(nameOfCollection + medicion.getIdestacion().toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes));
 
-
         if (medicionRepository.update(medicion)) {
-          
+
             return Response.status(201).entity(medicion).build();
         } else {
             System.out.println("\t>>>>>>>> [error]" + MessagesUtil.nameOfClassAndMethod());
@@ -171,26 +194,18 @@ public class MedicionController implements Serializable {
     @Tag(name = "BETA", description = "Esta api esta en desarrollo")
     public Response delete(@QueryParam("idmedicion") Long idmedicion, @QueryParam("anio") Integer anio, @QueryParam("mes") Integer mes) {
         /**
-         * Genera base de datos para cada año
-         * formato: lectura_añodb
-         *    lecturas_2024db
-         * 
-         * Para las colecciones seria
-         * el primer digito indica la estacion, el segundo digito sera el mes
-         * medicion_1_enero
-         * medicion_2_enero
-         * medicion_1_febrero
-         * medicion_2_febrero
-         * ----------------------
-         *   lecturas_2025db
-         * medicion_1_enero
-         * medicion_2_enero
-         * medicion_1_febrero
+         * Genera base de datos para cada año formato: lectura_añodb
+         * lecturas_2024db
+         *
+         * Para las colecciones seria el primer digito indica la estacion, el
+         * segundo digito sera el mes medicion_1_enero medicion_2_enero
+         * medicion_1_febrero medicion_2_febrero ----------------------
+         * lecturas_2025db medicion_1_enero medicion_2_enero medicion_1_febrero
          * medicion_2_febrero
          */
         medicionRepository.setDynamicDatabase("lecturas_" + anio.toString().trim() + "db");
         Integer numeroMes = mes;
-        medicionRepository.setDynamicCollection(nameOfCollection +idmedicion.toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes));
+        medicionRepository.setDynamicCollection(nameOfCollection + idmedicion.toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes));
 
         if (medicionRepository.deleteByPk(idmedicion) == 0L) {
             return Response.status(201).entity(Boolean.TRUE).build();
@@ -209,9 +224,9 @@ public class MedicionController implements Serializable {
     @APIResponse(responseCode = "500", description = "Servidor inalcanzable")
     @Tag(name = "BETA", description = "Esta api esta en desarrollo")
     public Response deleteMany(@QueryParam("filter") String filter, @QueryParam("idestacion") Long idestacion, @QueryParam("anio") Integer anio, @QueryParam("mes") Integer mes) {
-      medicionRepository.setDynamicDatabase("lecturas_" + anio.toString().trim() + "db");
+        medicionRepository.setDynamicDatabase("lecturas_" + anio.toString().trim() + "db");
         Integer numeroMes = mes;
-        medicionRepository.setDynamicCollection(nameOfCollection +idestacion.toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes));
+        medicionRepository.setDynamicCollection(nameOfCollection + idestacion.toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes));
 
         Search search = DocumentUtil.convertForLookup(filter, "", 0, 0);
         if (medicionRepository.deleteMany(search) == 0L) {
@@ -242,9 +257,9 @@ public class MedicionController implements Serializable {
         List<Medicion> suggestions = new ArrayList<>();
         try {
 
-     medicionRepository.setDynamicDatabase("lecturas_" + anio.toString().trim() + "db");
-        Integer numeroMes = mes;
-        medicionRepository.setDynamicCollection(nameOfCollection +idestacion.toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes));
+            medicionRepository.setDynamicDatabase("lecturas_" + anio.toString().trim() + "db");
+            Integer numeroMes = mes;
+            medicionRepository.setDynamicCollection(nameOfCollection + idestacion.toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes));
 
             Search search = DocumentUtil.convertForLookup(filter, sort, page, size);
 
@@ -275,9 +290,9 @@ public class MedicionController implements Serializable {
     public Long count(@QueryParam("filter") String filter, @QueryParam("sort") String sort, @QueryParam("page") Integer page, @QueryParam("size") Integer size, @QueryParam("idestacion") Long idestacion, @QueryParam("anio") Integer anio, @QueryParam("mes") Integer mes) {
         Long result = 0L;
         try {
-    medicionRepository.setDynamicDatabase("lecturas_" + anio.toString().trim() + "db");
-        Integer numeroMes = mes;
-        medicionRepository.setDynamicCollection(nameOfCollection +idestacion.toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes));
+            medicionRepository.setDynamicDatabase("lecturas_" + anio.toString().trim() + "db");
+            Integer numeroMes = mes;
+            medicionRepository.setDynamicCollection(nameOfCollection + idestacion.toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes));
 
             Search search = DocumentUtil.convertForLookup(filter, sort, page, size);
             result = medicionRepository.count(search);
@@ -289,6 +304,7 @@ public class MedicionController implements Serializable {
 
         return result;
     }
+
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="List<Medicion> findLastMedicion @QueryParam("filter") String filter, @QueryParam("sort") String sort, @QueryParam("anio") Integer anio, @QueryParam("mes") Integer mes">
     @GET
@@ -318,10 +334,10 @@ public class MedicionController implements Serializable {
 
             MessagesUtil.error(MessagesUtil.nameOfClassAndMethod() + "error: " + e.getLocalizedMessage());
         }
- 
 
         return suggestions;
     }
+
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="List<Medicion> findAllLastMedicion @QueryParam("filter") String filter, @QueryParam("sort") String sort, @QueryParam("anio") Integer anio, @QueryParam("mes") Integer mes">
     @GET
@@ -342,23 +358,21 @@ public class MedicionController implements Serializable {
         try {
             Integer numeroMes = mes;
             Long countEstaciones = estacionRepository.count();
-                    
-            for(int index = 1; index <= countEstaciones; index++){
-                
-            
-            medicionRepository.setDynamicDatabase("lecturas_" + anio.toString().trim() + "db");
-            medicionRepository.setDynamicCollection(nameOfCollection +String.valueOf(index) + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes));
-            Search search = DocumentUtil.convertForLookup(filter, sort, 1, 1);
 
-            resultSearch = medicionRepository.lookup(search);
-            suggestions.addAll(resultSearch);
+            for (int index = 1; index <= countEstaciones; index++) {
+
+                medicionRepository.setDynamicDatabase("lecturas_" + anio.toString().trim() + "db");
+                medicionRepository.setDynamicCollection(nameOfCollection + String.valueOf(index) + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes));
+                Search search = DocumentUtil.convertForLookup(filter, sort, 1, 1);
+
+                resultSearch = medicionRepository.lookup(search);
+                suggestions.addAll(resultSearch);
             }
 
         } catch (Exception e) {
 
             MessagesUtil.error(MessagesUtil.nameOfClassAndMethod() + "error: " + e.getLocalizedMessage());
         }
- 
 
         return suggestions;
     }
@@ -378,7 +392,7 @@ public class MedicionController implements Serializable {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
 
     public List<Medicion> betweenDate(@QueryParam("fechainicial") @DateFormat("dd-MM-yyyy") final Date fechainicial, @QueryParam("fechafinal") @DateFormat("dd-MM-yyyy") final Date fechafinal, @QueryParam("idestacion") Long idestacion, @QueryParam("anio") Integer anio, @QueryParam("mes") Integer mes) {
-        System.out.println("---------------------llego a "+MessagesUtil.nameOfClassAndMethod());
+        System.out.println("---------------------llego a " + MessagesUtil.nameOfClassAndMethod());
         System.out.println("Fecha inicio:" + fechainicial);
         System.out.println("Fecha final: " + fechafinal);
         System.out.println("Año: " + anio);
@@ -387,12 +401,11 @@ public class MedicionController implements Serializable {
         System.out.println("nombremes: " + JmoordbCoreDateUtil.getNombreMes(mes));
         List<Medicion> suggestions = new ArrayList<>();
         try {
-           medicionRepository.setDynamicDatabase("lecturas_" + anio.toString().trim() + "db");
-        Integer numeroMes = mes;
-        medicionRepository.setDynamicCollection(nameOfCollection +idestacion.toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes));
+            medicionRepository.setDynamicDatabase("lecturas_" + anio.toString().trim() + "db");
+            Integer numeroMes = mes;
+            medicionRepository.setDynamicCollection(nameOfCollection + idestacion.toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes));
 
             suggestions = medicionRepository.findByFechahoraGreaterThanEqualAndFechahoraLessThanEqual(fechainicial, fechafinal);
-
 
         } catch (Exception e) {
 
@@ -404,5 +417,4 @@ public class MedicionController implements Serializable {
     }
 
     // </editor-fold>
-   
 }
