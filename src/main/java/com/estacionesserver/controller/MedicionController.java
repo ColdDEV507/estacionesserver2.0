@@ -149,6 +149,7 @@ public class MedicionController implements Serializable {
 
     }
 // </editor-fold>
+   
     // <editor-fold defaultstate="collapsed" desc="Response update">
 
     @PUT
