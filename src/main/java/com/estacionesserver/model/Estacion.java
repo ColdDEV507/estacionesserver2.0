@@ -7,6 +7,7 @@ package com.estacionesserver.model;
 import com.jmoordb.core.annotation.Column;
 import com.jmoordb.core.annotation.Entity;
 import com.jmoordb.core.annotation.Id;
+import com.jmoordb.core.annotation.enumerations.GenerationType;
 import java.util.Objects;
 
 /**
@@ -15,7 +16,7 @@ import java.util.Objects;
  */
 @Entity
 public class Estacion {
-    @Id 
+    @Id(strategy = GenerationType.AUTO) 
     private Long idestacion;
     @Column
     private String estacion;

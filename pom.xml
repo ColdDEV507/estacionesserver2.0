@@ -121,13 +121,17 @@
         -->
 
    
-<dependency>
+<!--<dependency>
             <groupId>com.github.avbravo</groupId>
             <artifactId>jmoordb-core</artifactId>
             <version>${version.jmoordbcore}</version>
-        </dependency>
+        </dependency>-->
   
-        
+           <dependency>
+            <groupId>com.avbravo.jmoordb.core.processor</groupId>
+            <artifactId>jmoordb-core</artifactId>
+            <version>1.16.0-alpha1</version>
+        </dependency>
       
         
         <dependency>

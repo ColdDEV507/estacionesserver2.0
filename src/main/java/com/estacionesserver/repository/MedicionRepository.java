@@ -22,13 +22,15 @@ import com.jmoordb.core.model.Search;
 import com.jmoordb.core.repository.CrudRepository;
 import java.util.Date;
 import java.util.List;
+import org.bson.types.ObjectId;
 
 /**
  *
  * @author avbravo
  */
 @Repository(database = "{mongodb.database1}", entity = Medicion.class)
-public interface MedicionRepository extends CrudRepository<Medicion, Long> {
+//public interface MedicionRepository extends CrudRepository<Medicion, Long> {
+public interface MedicionRepository extends CrudRepository<Medicion, ObjectId> {
 
     @Lookup
     public List<Medicion> lookup(Search search);

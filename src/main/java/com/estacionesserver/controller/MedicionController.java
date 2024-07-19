@@ -26,15 +26,13 @@ import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.io.Serializable;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.bson.types.ObjectId;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -70,10 +68,10 @@ public class MedicionController implements Serializable {
     @APIResponse(responseCode = "500", description = "Servidor inalcanzable")
     @Tag(name = "BETA", description = "Esta api esta en desarrollo")
     @APIResponse(description = "El medicion", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Medicion.class)))
-    public Medicion findByIdmedicionIdproyecto(@QueryParam("idmedicion") Long idmedicion, @QueryParam("anio") Long anio) {
+    public Medicion findByIdmedicionIdproyecto(@QueryParam("idmedicion") String idmedicion, @QueryParam("anio") Long anio) {
 
         medicionRepository.setDynamicCollection(nameOfCollection + anio);
-        return medicionRepository.findByPk(idmedicion).orElseThrow(
+        return medicionRepository.findByPk(new ObjectId(idmedicion)).orElseThrow(
                 () -> new WebApplicationException("No hay medicion con idmedicion " + idmedicion, Response.Status.NOT_FOUND));
 
     }
@@ -108,7 +106,20 @@ public class MedicionController implements Serializable {
 
         Optional<Medicion> medicionOptional = medicionRepository.save(medicion);
         if (medicionOptional.isPresent()) {
-
+            System.out.println(" Se guardo "+medicionOptional.toString());
+          
+//                Thread.sleep(5000);
+                System.out.println("voy a actualizarlo");
+                medicion.setHumedad(105.15);
+                if(medicionRepository.update(medicion)){
+                     System.out.println("lo actualizo");
+                }else{
+                         System.out.println("No lo actualizacion");
+                         System.out.println("El error fue"+medicionRepository.getJmoordbException().getLocalizedMessage());
+                        }
+               
+                
+        
             return Response.status(201).entity(medicionOptional.get()).build();
         } else {
             return Response.status(400).entity("Error " + medicionRepository.getJmoordbException().getLocalizedMessage()).build();
@@ -173,7 +184,7 @@ public class MedicionController implements Serializable {
     @APIResponse(responseCode = "200", description = "Cuando elimina el medicion")
     @APIResponse(responseCode = "500", description = "Servidor inalcanzable")
     @Tag(name = "BETA", description = "Esta api esta en desarrollo")
-    public Response delete(@QueryParam("idmedicion") Long idmedicion, @QueryParam("anio") Integer anio, @QueryParam("mes") Integer mes) {
+    public Response delete(@QueryParam("idmedicion") String idmedicion, @QueryParam("anio") Integer anio, @QueryParam("mes") Integer mes) {
         /**
          * Genera base de datos para cada año formato: lectura_añodb
          * lecturas_2024db
@@ -188,7 +199,7 @@ public class MedicionController implements Serializable {
         Integer numeroMes = mes;
         medicionRepository.setDynamicCollection(nameOfCollection + idmedicion.toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes).toLowerCase());
 
-        if (medicionRepository.deleteByPk(idmedicion) == 0L) {
+        if (medicionRepository.deleteByPk(new ObjectId(idmedicion)) == 0L) {
             return Response.status(201).entity(Boolean.TRUE).build();
         } else {
             return Response.status(400).entity("Error " + medicionRepository.getJmoordbException().getLocalizedMessage()).build();
@@ -232,9 +243,10 @@ public class MedicionController implements Serializable {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
 
     public List<Medicion> lookup(@QueryParam("filter") String filter, @QueryParam("sort") String sort, @QueryParam("page") Integer page, @QueryParam("size") Integer size, @QueryParam("idestacion") Long idestacion, @QueryParam("anio") Integer anio, @QueryParam("mes") Integer mes) {
-        System.out.println("Año: " + anio);
-        System.out.println("ID Estacion: " + idestacion);
-        System.out.println("Mes: " + mes);
+        System.out.println("\tAño: " + anio);
+        System.out.println("\tID Estacion: " + idestacion);
+        System.out.println("\tMes: " + mes);
+        System.out.println("\t{} filter "+filter);
         List<Medicion> suggestions = new ArrayList<>();
         try {
 
@@ -243,7 +255,9 @@ public class MedicionController implements Serializable {
             medicionRepository.setDynamicCollection(nameOfCollection + idestacion.toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes).toLowerCase());
 
             Search search = DocumentUtil.convertForLookup(filter, sort, page, size);
-
+            System.out.println("\t{medicionRepository.getDynamicDatabase()} "+medicionRepository.getDynamicDatabase());
+            System.out.println("\t{medicionRepository.getDynamicCollection()} "+medicionRepository.getDynamicCollection());
+            System.out.println("\t}search.toString() {"+search.getFilter().toJson());
             suggestions = medicionRepository.lookup(search);
 
         } catch (Exception e) {
