@@ -104,42 +104,18 @@ public class MedicionController implements Serializable {
 
         }
 
+        
         Optional<Medicion> medicionOptional = medicionRepository.save(medicion);
         if (medicionOptional.isPresent()) {
-            System.out.println(" Se guardo "+medicionOptional.toString());
-          
+            System.out.println(" Se guardo " + medicionOptional.toString());
+
 //            try {
 //                Thread.sleep(2000);
 //            } catch (InterruptedException ex) {
 //                Logger.getLogger(MedicionController.class.getName()).log(Level.SEVERE, null, ex);
 //            }
-                System.out.println("voy a actualizarlo");
-                 medicionOptional.get().setHumedad(105.15);
            
-               if (conIsoDate) {
 
-            Date dateconverter = JmoordbCoreDateUtil.dateToiSODateToDate(medicion.getFechahora());
-
-            medicionRepository.setDynamicDatabase("lecturas_" + JmoordbCoreDateUtil.anioDeUnaFecha(dateconverter).toString().trim() + "db");
-            Integer numeroMes = JmoordbCoreDateUtil.mesDeUnaFechaStartEneroWith0(dateconverter);
-            medicionRepository.setDynamicCollection(nameOfCollection + medicion.getIdestacion().toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes).toLowerCase());
-
-        } else {
-
-            medicionRepository.setDynamicDatabase("lecturas_" + JmoordbCoreDateUtil.anioDeUnaFecha(medicion.getFechahora()).toString().trim() + "db");
-            Integer numeroMes = JmoordbCoreDateUtil.mesDeUnaFechaStartEneroWith0(medicion.getFechahora());
-            medicionRepository.setDynamicCollection(nameOfCollection + medicion.getIdestacion().toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes).toLowerCase());
-
-        }
-                if(medicionRepository.update( medicionOptional.get())){
-                     System.out.println("lo actualizo");
-                }else{
-                         System.out.println("No lo actualizacion");
-                         System.out.println("El error fue"+medicionRepository.getJmoordbException().getLocalizedMessage());
-                        }
-               
-                
-        
             return Response.status(201).entity(medicionOptional.get()).build();
         } else {
             return Response.status(400).entity("Error " + medicionRepository.getJmoordbException().getLocalizedMessage()).build();
@@ -266,7 +242,7 @@ public class MedicionController implements Serializable {
         System.out.println("\tAño: " + anio);
         System.out.println("\tID Estacion: " + idestacion);
         System.out.println("\tMes: " + mes);
-        System.out.println("\t{} filter "+filter);
+        System.out.println("\t{} filter " + filter);
         List<Medicion> suggestions = new ArrayList<>();
         try {
 
@@ -275,9 +251,9 @@ public class MedicionController implements Serializable {
             medicionRepository.setDynamicCollection(nameOfCollection + idestacion.toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes).toLowerCase());
 
             Search search = DocumentUtil.convertForLookup(filter, sort, page, size);
-            System.out.println("\t{medicionRepository.getDynamicDatabase()} "+medicionRepository.getDynamicDatabase());
-            System.out.println("\t{medicionRepository.getDynamicCollection()} "+medicionRepository.getDynamicCollection());
-            System.out.println("\t}search.toString() {"+search.getFilter().toJson());
+            System.out.println("\t{medicionRepository.getDynamicDatabase()} " + medicionRepository.getDynamicDatabase());
+            System.out.println("\t{medicionRepository.getDynamicCollection()} " + medicionRepository.getDynamicCollection());
+            System.out.println("\t}search.toString() {" + search.getFilter().toJson());
             suggestions = medicionRepository.lookup(search);
 
         } catch (Exception e) {

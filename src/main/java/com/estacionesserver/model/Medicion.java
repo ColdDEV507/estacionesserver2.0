@@ -75,6 +75,9 @@ public class Medicion {
         this._id = _id;
     }
 
+   
+
+
     public Long getIdestacion() {
         return idestacion;
     }
@@ -255,7 +258,7 @@ public class Medicion {
 
     @Override
     public String toString() {
-        return "Medicion{" + "_id=" + _id + ", idestacion=" + idestacion + ", fechahora=" + fechahora + ", co=" + co + ", o3=" + o3 + ", so2=" + so2 + ", no2=" + no2 + ", pm25=" + pm25 + ", pm10=" + pm10 + ", temperatura=" + temperatura + ", humedad=" + humedad + ", lluvia=" + lluvia + ", dir_Viento=" + dir_Viento + ", vel_Viento=" + vel_Viento + '}';
+        return "Medicion{" + "_id=" + _id.toString() + ", idestacion=" + idestacion + ", fechahora=" + fechahora + ", co=" + co + ", o3=" + o3 + ", so2=" + so2 + ", no2=" + no2 + ", pm25=" + pm25 + ", pm10=" + pm10 + ", temperatura=" + temperatura + ", humedad=" + humedad + ", lluvia=" + lluvia + ", dir_Viento=" + dir_Viento + ", vel_Viento=" + vel_Viento + '}';
     }
 
    
