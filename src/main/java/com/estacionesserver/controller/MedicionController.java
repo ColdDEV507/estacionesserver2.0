@@ -108,10 +108,30 @@ public class MedicionController implements Serializable {
         if (medicionOptional.isPresent()) {
             System.out.println(" Se guardo "+medicionOptional.toString());
           
-//                Thread.sleep(5000);
+//            try {
+//                Thread.sleep(2000);
+//            } catch (InterruptedException ex) {
+//                Logger.getLogger(MedicionController.class.getName()).log(Level.SEVERE, null, ex);
+//            }
                 System.out.println("voy a actualizarlo");
-                medicion.setHumedad(105.15);
-                if(medicionRepository.update(medicion)){
+                 medicionOptional.get().setHumedad(105.15);
+           
+               if (conIsoDate) {
+
+            Date dateconverter = JmoordbCoreDateUtil.dateToiSODateToDate(medicion.getFechahora());
+
+            medicionRepository.setDynamicDatabase("lecturas_" + JmoordbCoreDateUtil.anioDeUnaFecha(dateconverter).toString().trim() + "db");
+            Integer numeroMes = JmoordbCoreDateUtil.mesDeUnaFechaStartEneroWith0(dateconverter);
+            medicionRepository.setDynamicCollection(nameOfCollection + medicion.getIdestacion().toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes).toLowerCase());
+
+        } else {
+
+            medicionRepository.setDynamicDatabase("lecturas_" + JmoordbCoreDateUtil.anioDeUnaFecha(medicion.getFechahora()).toString().trim() + "db");
+            Integer numeroMes = JmoordbCoreDateUtil.mesDeUnaFechaStartEneroWith0(medicion.getFechahora());
+            medicionRepository.setDynamicCollection(nameOfCollection + medicion.getIdestacion().toString().trim() + "_" + JmoordbCoreDateUtil.getNombreMes(numeroMes).toLowerCase());
+
+        }
+                if(medicionRepository.update( medicionOptional.get())){
                      System.out.println("lo actualizo");
                 }else{
                          System.out.println("No lo actualizacion");

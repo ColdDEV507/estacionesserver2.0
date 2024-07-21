@@ -17,12 +17,8 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import org.bson.Document;
-import com.mongodb.client.model.FindOneAndUpdateOptions;
-import com.mongodb.client.model.ReturnDocument;
 import com.mongodb.client.result.InsertOneResult;
-import org.bson.BsonInt64;
 import org.bson.conversions.Bson;
-import org.bson.BsonDocument;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.UpdateResult;
 import com.mongodb.client.model.UpdateOptions;
@@ -34,16 +30,13 @@ import org.bson.types.ObjectId;
  */
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 import java.util.Optional;
-import java.util.function.Supplier;
 import com.jmoordb.core.util.MessagesUtil;
 import com.jmoordb.core.model.Pagination;
 import com.jmoordb.core.model.Sorted;
 import com.jmoordb.core.util.JmoordbCoreDateUtil;
-import java.util.HashSet;
 import com.estacionesserver.model.Medicion;
+import java.util.Date;
 
 // </editor-fold>
 @ApplicationScoped
@@ -625,15 +618,43 @@ public class MedicionRepositoryImpl implements MedicionRepository {
     public Optional<Medicion> findByPkInternal(ObjectId id, String mongodbDatabaseValue, String mongodbCollectionValue) {
         try {
             System.out.println(MessagesUtil.nameOfClassAndMethod() + "[start]");
+            
+            
             MongoDatabase database = mongoClient.getDatabase(mongodbDatabaseValue);
             MongoCollection<Document> collection = database.getCollection(mongodbCollectionValue);
+            System.out.println("================================================");
+            System.out.println("\tmongodbDatabaseValue "+mongodbDatabaseValue);
+            System.out.println("\tmongodbCollectionValue "+mongodbCollectionValue);
+            System.out.println("\tObjectId id"+id);
+            System.out.println("\tid.toString()"+id.toString());
+            System.out.println("\tid.toHexString()"+id.toHexString());
+            System.out.println("\tid.getDate()"+id.getDate());
+            System.out.println("\tid.getTimestamp()"+id.getTimestamp());
             String x=id.toString();
             System.out.println("x "+x);
+/**
+db.medicion_1_febrero.find({"_id":ObjectId('669b2e8f0b3d1951336ec8d7')}).pretty()
+
 
 //            Bson filter = eq("_id", new ObjectId(x));
-            Bson filter = eq("_id.$oid", x);
+//            Bson filter = eq("_id.$oid", x);
+String na="ObjectId('";
+String nf="')";
+String d= na+x+nf;
+d=d.replace("\"", "");
+            Bson filter = eq("_id", d);
+//            Bson filter = eq("_id", "ObjectId('"+x+"')");
+ Bson filter = eq("_id", new ObjectId(x));
+**/
 
-            System.out.println("\t[filter ]"+filter.toBsonDocument().toJson());
+//Date dat = new ObjectId(x).getDate();
+//int  tim = new ObjectId(x).getTimestamp();
+// Bson filter = and(eq("_id.date", dat),
+//                   eq("_id.timestamp",tim));
+ 
+// Bson filter = eq("_id", new ObjectId(x));
+ Bson filter = eq("_id", id);
+  System.out.println("\t[filter ]"+filter.toBsonDocument().toJson());
 
             Document doc = collection.find(filter).allowDiskUse(Boolean.TRUE).first();
             if (doc == null) {
