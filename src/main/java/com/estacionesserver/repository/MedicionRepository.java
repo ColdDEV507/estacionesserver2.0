@@ -29,7 +29,6 @@ import org.bson.types.ObjectId;
  * @author avbravo
  */
 @Repository(database = "{mongodb.database1}", entity = Medicion.class)
-//public interface MedicionRepository extends CrudRepository<Medicion, Long> {
 public interface MedicionRepository extends CrudRepository<Medicion, ObjectId> {
 
     @Lookup
@@ -56,7 +55,6 @@ public interface MedicionRepository extends CrudRepository<Medicion, ObjectId> {
     @LikeBy(caseSensitive = CaseSensitive.NO, typeOrder = TypeOrder.ASC, likeByType = LikeByType.ANYWHERE)
     public List<Medicion> likeByMedicionPagination(String medicion, Pagination pagination);
     
-   
     
     @LikeBy(caseSensitive = CaseSensitive.NO, typeOrder = TypeOrder.ASC, likeByType = LikeByType.ANYWHERE)
     public List<Medicion> likeByDescripcion(String descripcion);

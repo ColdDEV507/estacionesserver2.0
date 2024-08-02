@@ -107,15 +107,7 @@ public class MedicionController implements Serializable {
         
         Optional<Medicion> medicionOptional = medicionRepository.save(medicion);
         if (medicionOptional.isPresent()) {
-            System.out.println(" Se guardo " + medicionOptional.toString());
-
-//            try {
-//                Thread.sleep(2000);
-//            } catch (InterruptedException ex) {
-//                Logger.getLogger(MedicionController.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-           
-
+    
             return Response.status(201).entity(medicionOptional.get()).build();
         } else {
             return Response.status(400).entity("Error " + medicionRepository.getJmoordbException().getLocalizedMessage()).build();

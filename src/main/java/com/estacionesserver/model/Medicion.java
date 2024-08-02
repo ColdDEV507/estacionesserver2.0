@@ -18,7 +18,7 @@ import org.bson.types.ObjectId;
  */
 @Entity
 public class Medicion {
-    @Id(strategy = GenerationType.OBJECTID, commentary = "Valor maximo 9,223,372,036,854,775,807" )
+    @Id(strategy = GenerationType.OBJECTID )
     private ObjectId _id;
     @Column
     private Long idestacion;
