@@ -60,7 +60,7 @@ public interface MedicionRepository extends CrudRepository<Medicion, ObjectId> {
     public List<Medicion> likeByDescripcion(String descripcion);
 
 
-   @SearchLikeBy(caseSensitive = CaseSensitive.NO, typeOrder = TypeOrder.ASC, likeByType = LikeByType.ANYWHERE)
+    @SearchLikeBy(caseSensitive = CaseSensitive.NO, typeOrder = TypeOrder.ASC, likeByType = LikeByType.ANYWHERE)
     public List<Medicion> searchLikeByMedicion(String medicion, Search search);
 
     @SearchLikeBy(caseSensitive = CaseSensitive.NO, typeOrder = TypeOrder.ASC, likeByType = LikeByType.ANYWHERE)
