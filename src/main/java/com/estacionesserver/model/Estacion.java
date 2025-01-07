@@ -27,18 +27,21 @@ public class Estacion {
     @Column
     private String longitud;
     @Column
+    private String url;
+    @Column
     private Boolean activo;
 
     public Estacion() {
     }
 
-    public Estacion(Long idestacion, String estacion, String descripcion, Boolean activo, String latitud, String longitud) {
+    public Estacion(Long idestacion, String estacion, String descripcion, Boolean activo, String latitud, String longitud, String url) {
         this.idestacion = idestacion;
         this.estacion = estacion;
         this.descripcion = descripcion;
         this.activo = activo;
         this.latitud = latitud;
         this.longitud = longitud;
+        this.url = url;
     }
 
     public Long getIdestacion() {
@@ -88,6 +91,14 @@ public class Estacion {
     public void setLongitud(String longitud){
         this.longitud = longitud;
     }
+    
+    public String getUrl(){
+        return url;
+    }
+    
+    public void setUrl(String url){
+        this.url = url;
+    }
 
     @Override
     public int hashCode() {
@@ -98,6 +109,7 @@ public class Estacion {
         hash = 83 * hash + Objects.hashCode(this.activo);
         hash = 83 * hash + Objects.hashCode(this.latitud);
         hash = 83 * hash + Objects.hashCode(this.longitud);
+        hash = 83 * hash + Objects.hashCode(this.url);
         return hash;
     }
 
@@ -122,10 +134,13 @@ public class Estacion {
         if (!Objects.equals(this.idestacion, other.idestacion)) {
             return false;
         }
-        if (!Objects.equals(this.idestacion, other.longitud)) {
+        if (!Objects.equals(this.longitud, other.longitud)) {
             return false;
         }
-        if (!Objects.equals(this.idestacion, other.latitud)) {
+        if (!Objects.equals(this.latitud, other.latitud)) {
+            return false;
+        }
+        if (!Objects.equals(this.url, other.url)) {
             return false;
         }
         return Objects.equals(this.activo, other.activo);
@@ -133,7 +148,7 @@ public class Estacion {
 
     @Override
     public String toString() {
-        return "Estacion{" + "idestacion=" + idestacion + ", estacion=" + estacion + ", descripcion=" + descripcion + ", latitud=" + latitud + ", longitud=" + longitud + ", activo=" + activo + '}';
+        return "Estacion{" + "idestacion=" + idestacion + ", estacion=" + estacion + ", descripcion=" + descripcion + ", latitud=" + latitud + ", longitud=" + longitud + ", url=" + url + ", activo=" + activo + '}';
     }
 
    
